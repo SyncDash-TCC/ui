@@ -1,7 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-axios.defaults.baseURL = 'http://localhost:8002/';
+axios.defaults.baseURL = process.env.REACT_APP_API;
 
 const instance = axios.create({
 	// eslint-disable-next-line no-undef
