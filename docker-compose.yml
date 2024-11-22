@@ -21,8 +21,9 @@ services:
   nginx:
     container_name: nginx
     image: nginx:latest
+    restart: always
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - './log/:/var/log/nginx/'
     ports:
       - '80:80'
     networks:
