@@ -74,6 +74,7 @@ const Inicial = () => {
             setValorLiquido('');
             setTaxa('');
             setFormaPagamento('');
+            nav("/dashboard");
         }).catch(() => {
             setDataVenda('');
             setDataPagamento('');
@@ -260,22 +261,22 @@ const Inicial = () => {
                             <Typography variant="h5" gutterBottom sx={{marginBottom: 3}} color="black">
                                 Preencha os dados de vendas
                             </Typography>
-                                <TextField
-                                    variant="filled"
-                                    label="Nome do produto"
-                                    fullWidth
-                                    sx={{ 
-                                        marginBottom: 2,
-                                        "& .MuiInputLabel-root": {
-                                            color: "gray"
-                                        }
-                                    }}
-                                    size="small"
-                                    required
-                                    value={nomeProduto}
-                                    onChange={(e) => setNomeProduto(e.target.value)}
-                                    inputProps={{ maxLength: 25 }}
-                                />
+                            <TextField
+                                variant="filled"
+                                label="Nome do produto"
+                                fullWidth
+                                sx={{ 
+                                    marginBottom: 2,
+                                    "& .MuiInputLabel-root": {
+                                        color: "gray"
+                                    }
+                                }}
+                                size="small"
+                                required
+                                value={nomeProduto}
+                                onChange={(e) => setNomeProduto(e.target.value)}
+                                inputProps={{ maxLength: 25 }}
+                            />
                             <TextField 
                                 label="Data Venda" 
                                 type="date" 

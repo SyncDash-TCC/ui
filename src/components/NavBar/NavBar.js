@@ -38,13 +38,15 @@ const NavBar = () => {
     const name = useSelector(state => state.AuthReducer.name);
 
     useEffect(() => {
-        getUserInfo();
+        if (token) {
+            getUserInfo();
+        }
     }, [token]);
 
     useEffect(() => {
         const path = location.pathname.split("/")[1];
         setActiveButton(path);
-    }, [location])
+    }, [location]);
 
     const getUserInfo = () => {
         api.GetUserInfo()
@@ -54,6 +56,7 @@ const NavBar = () => {
             .catch(error => {
                 if (error.response.status === 401) {
                     Cookies.remove("tk");
+                    window.location.reload();
                 }
             });
     }

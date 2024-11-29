@@ -9,9 +9,10 @@ import api from "../../axios";
 import {loginUser} from "../../actions/AuthActions";
 import Loading from "../../components/Loading/Loading";
 import InputPassword from "../../components/Input/InputPassword";
-import { GRAY_LABEL_UX, RED_ERROR_UX, SECONDARY, styleYellowButton, GRAY_BORDER_TABLE, LINE_TABLE, GRAY_BG_BODY } from "../../shared/utils";
+import { GRAY_LABEL_UX, PRIMARY, RED_ERROR_UX, styleYellowButton } from "../../shared/utils";
 import "./Login.css";
 import { showSnackMessage } from "../../actions/SnackActions";
+import logo from "../../assets/files/logo.png";
 
 
 const Login = () => {
@@ -46,13 +47,17 @@ const Login = () => {
     return (
         <Box
             sx={{
-                backgroundColor: SECONDARY,
+                backgroundColor: PRIMARY,
                 height: "100vh",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
+                flexDirection: "column",
+                paddingTop: "150px",
             }}
         >
+            <Box sx={{display: "flex", alignItems: "center", gap: 2, paddingY: 4}}>
+                <img src={logo} alt="Logo" style={{height: "60px"}} />
+            </Box>
 			<Grid container sx={{backgroundColor: "#ffffff", width: "500px", borderRadius: 2, padding: 2, 
                 boxShadow: "0px 10px 15px -3px rgba(0,0,0,0.2)"}}>
                 <Grid item xs={12} sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>

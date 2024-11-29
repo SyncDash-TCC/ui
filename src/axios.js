@@ -60,6 +60,9 @@ export default {
 	GetPlanilhaDetail(data) {
 		return instance.get("planilha/detail", { params: { date_selected: data.date_selected, id_historico: data.id_historico } });
 	},
+	UpdateVenda(data) {
+		return instance.put("planilha/update", data);
+	},
 	// ======== DASHBOARD ========
 	GetDashboard(data) {
 		return instance.get("dashboard/detail", { params: { date_selected: data.date_selected, id_historico: data.id_historico } });

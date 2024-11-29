@@ -135,7 +135,7 @@ const Historico = () => {
                                                     }}
                                                     onClick={() => goPlanilha(item.id, item.data, item.hora)}
                                                 >
-                                                    <DescriptionIcon style={{ color: BORDER_BUTTON }} />
+                                                    <DescriptionIcon style={{ color: PRIMARY }} />
                                                 </Box>
                                                 <Box
                                                     sx={{
@@ -157,7 +157,7 @@ const Historico = () => {
                                                     }}
                                                     onClick={() => goDashboard(item.id, item.data, item.hora)}
                                                 >
-                                                    <LeaderboardIcon sx={{ color: BORDER_BUTTON }} />
+                                                    <LeaderboardIcon sx={{ color: PRIMARY }} />
                                                 </Box>
                                             </Box>
                                         </Box>

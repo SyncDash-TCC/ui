@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Grid } from "@mui/material";
+import { Grid, Modal } from "@mui/material";
 import { showSnackMessage } from "../../actions/SnackActions";
-import { Skeleton, Button, Box, Autocomplete, TextField, Typography } from "@mui/material";
+import { Skeleton, Button, Box, Autocomplete, TextField, Typography, MenuItem, InputLabel, Select, FormControl } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import api from "../../axios";
-import { PRIMARY, localeText } from "../../shared/utils";
+import { PRIMARY, localeText, styleModal } from "../../shared/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 
 
@@ -22,6 +22,34 @@ const Planilha = () => {
     const [options, setOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [rows, setRows] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [nomeProduto, setNomeProduto] = useState("");
+    const [dataVenda, setDataVenda] = useState("");
+    const [dataPagamento, setDataPagamento] = useState("");
+    const [valorBruto, setValorBruto] = useState("");
+    const [valorLiquido, setValorLiquido] = useState("");
+    const [taxa, setTaxa] = useState("");
+    const [formaPagamento, setFormaPagamento] = useState("");
+    const [categoria, setCategoria] = useState();
+    const [idLine, setIdLien] = useState(0);
+    
+    const formaPagamentoOptions = [
+        { value: "Crédito", label: "Crédito" },
+        { value: "Débito", label: "Débito" },
+        { value: "Pix", label: "Pix" },
+        { value: "Boleto", label: "Boleto" },
+    ];
+
+    const categorias = [
+        { value: "Alimentos e Bebidas", label: "Alimentos e Bebidas" },
+        { value: "Roupas e Acessórios", label: "Roupas e Acessórios" },
+        { value: "Eletrônicos", label: "Eletrônicos" },
+        { value: "Móveis e Decoração", label: "Móveis e Decoração" },
+        { value: "Beleza e Cuidados Pessoais", label: "Beleza e Cuidados Pessoais" },
+        { value: "Saúde e Bem-Estar", label: "Saúde e Bem-Estar" },
+        { value: "Brinquedos e Jogos", label: "Brinquedos e Jogos" },
+        { value: "Serviços", label: "Serviços" },
+    ];
 
     useEffect(() => {
         getPlanilhaDetail()
@@ -49,6 +77,37 @@ const Planilha = () => {
             setLoading(false);
             dispatch(showSnackMessage({message: "Algo deu errado!", severity: "error"}));
         })
+    };
+
+    const updateVenda = async () => {
+        const dataRequest = {
+            id: idLine,
+            nome_produto: nomeProduto,
+            data_venda: dataVenda,
+            data_pagamento: dataPagamento,
+            valor_bruto: valorBruto,
+            valor_liquido: valorLiquido,
+            taxa: taxa,
+            forma_pagamento: formaPagamento,
+            categoria_produto: categoria,
+        }
+        api.UpdateVenda(dataRequest).then(() => {
+            setOpen(false);
+            getPlanilhaDetail();
+            dispatch(showSnackMessage({message: "Dados atualizados com sucesso!", severity: "success"}))
+        }).catch(() => {
+            dispatch(showSnackMessage({message: "Algo deu errado! Por favor, tente novamente", severity: "error"}))
+        })
+    }
+
+    const isFormValid = () => {
+        const isValorBrutoValid = !isNaN(parseFloat(valorBruto)) && valorBruto !== '';
+        const isValorLiquidoValid = !isNaN(parseFloat(valorLiquido)) && valorLiquido !== '';
+        const isTaxaValid = !isNaN(parseFloat(taxa)) && taxa !== '';
+        const isFormaPagamentoValid = formaPagamento !== '';
+        const isCategoriaValid = categoria && categoria.trim()
+
+        return nomeProduto && isCategoriaValid && dataVenda && dataPagamento && isValorBrutoValid && isValorLiquidoValid && isTaxaValid && isFormaPagamentoValid;
     };
 
     const columns = [
@@ -115,6 +174,47 @@ const Planilha = () => {
         getPlanilhaDetail(true);
     };
 
+    const handleCellClick = (params) => {
+        let valorLiquido = parseFloat(
+            params.row.valor_liquido
+                .replace("R$", "")
+                .trim()
+                .replace(".", "") 
+                .replace(",", ".")
+        );
+        let valorBruto = parseFloat(
+            params.row.valor_bruto
+                .replace("R$", "")
+                .trim()
+                .replace(".", "") 
+                .replace(",", ".")
+        );
+        let taxa = parseFloat(
+            params.row.taxa
+                .replace("R$", "")
+                .trim()
+                .replace(".", "") 
+                .replace(",", ".")
+        )
+        let dataPagamento = params.row.data_pagamento;
+        let dataPagamentoFormatted = dataPagamento.split("/").reverse().join("-");
+        let dataVenda = params.row.data_venda;
+        let dataVendaFormatted = dataVenda.split("/").reverse().join("-");
+        setNomeProduto(params.row.nome_produto);
+        setTaxa(taxa);
+        setCategoria(params.row.categoria_produto);
+        setDataPagamento(dataPagamentoFormatted);
+        setDataVenda(dataVendaFormatted);
+        setFormaPagamento(params.row.forma_pagamento);
+        setValorBruto(valorBruto);
+        setValorLiquido(valorLiquido);
+        setIdLien(params.row.id);
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     return (
         <div className="main">
@@ -142,6 +242,165 @@ const Planilha = () => {
                         alignItems="center"
                         sx={{ marginTop: 5 }}
                     >
+                        <Modal 
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                        >
+                            <Box sx={styleModal}>
+                                <Typography sx={{fontWeight: "bold", fontSize: 22, marginBottom: 4}}>
+                                    Alterar dados de venda
+                                </Typography>
+                                <TextField
+                                    variant="filled"
+                                    label="Nome do produto"
+                                    fullWidth
+                                    sx={{ 
+                                        marginBottom: 2,
+                                        "& .MuiInputLabel-root": {
+                                            color: "gray"
+                                        }
+                                    }}
+                                    size="small"
+                                    required
+                                    value={nomeProduto}
+                                    onChange={(e) => setNomeProduto(e.target.value)}
+                                    inputProps={{ maxLength: 25 }}
+                                />
+                                <TextField 
+                                    label="Data Venda" 
+                                    type="date" 
+                                    fullWidth 
+                                    variant="filled" 
+                                    sx={{ 
+                                        marginBottom: 2,
+                                        "& .MuiInputLabel-root": {
+                                            color: "gray"
+                                        }
+                                    }}
+                                    InputLabelProps={{ shrink: true }}
+                                    size="small"
+                                    required
+                                    value={dataVenda}
+                                    onChange={(e) => setDataVenda(e.target.value)}
+                                />
+                                <TextField 
+                                    label="Data Pagamento" 
+                                    type="date" 
+                                    fullWidth 
+                                    variant="filled" 
+                                    sx={{ 
+                                        marginBottom: 2,
+                                        "& .MuiInputLabel-root": {
+                                            color: "gray"
+                                        }
+                                    }}
+                                    InputLabelProps={{ shrink: true }} 
+                                    size="small"
+                                    required
+                                    value={dataPagamento}
+                                    onChange={(e) => setDataPagamento(e.target.value)}
+                                />
+                                <TextField 
+                                    label="Valor Bruto" 
+                                    type="number" 
+                                    fullWidth 
+                                    variant="filled" 
+                                    sx={{ 
+                                        marginBottom: 2,
+                                        "& .MuiInputLabel-root": {
+                                            color: "gray"
+                                        }
+                                    }}
+                                    size="small"
+                                    required
+                                    value={valorBruto}
+                                    onChange={(e) => setValorBruto(e.target.value)}
+                                />
+                                <TextField 
+                                    label="Valor Líquido" 
+                                    type="number" 
+                                    fullWidth 
+                                    variant="filled" 
+                                    sx={{ 
+                                        marginBottom: 2,
+                                        "& .MuiInputLabel-root": {
+                                            color: "gray"
+                                        }
+                                    }}
+                                    size="small"
+                                    required
+                                    value={valorLiquido}
+                                    onChange={(e) => setValorLiquido(e.target.value)}
+                                />
+                                <TextField 
+                                    label="Taxa" 
+                                    type="number" 
+                                    fullWidth 
+                                    variant="filled" 
+                                    sx={{ 
+                                        marginBottom: 2,
+                                        "& .MuiInputLabel-root": {
+                                            color: "gray"
+                                        }
+                                    }}
+                                    size="small"
+                                    required
+                                    value={taxa}
+                                    onChange={(e) => setTaxa(e.target.value)}
+                                />
+                                <FormControl fullWidth variant="filled" sx={{ marginBottom: 2 }} size="small" required>
+                                    <InputLabel id="forma-pagamento-label" sx={{color: "gray"}}>Forma de Pagamento</InputLabel>
+                                    <Select
+                                        labelId="forma-pagamento-label"
+                                        value={formaPagamento}
+                                        onChange={(e) => setFormaPagamento(e.target.value)}
+                                        label="Forma de Pagamento"
+                                    >
+                                        {formaPagamentoOptions.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl fullWidth variant="filled" sx={{ marginBottom: 2 }} size="small" required>
+                                    <InputLabel id="forma-pagamento-label" sx={{color: "gray"}}>Categoria do produto</InputLabel>
+                                    <Select
+                                        labelId="forma-pagamento-label"
+                                        value={categoria}
+                                        onChange={(e) => setCategoria(e.target.value)}
+                                        label="Categoria do produto"
+                                    >
+                                        {categorias.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <Box sx={{display: "flex", justifyContent: "end", gap: 2, marginTop: 4}}>
+                                    <Button 
+                                        variant="contained" 
+                                        sx={{backgroundColor: "#FF5E1E", height: "30.75px", paddingX: "20px"}}
+                                        size="small" 
+                                        onClick={() => setOpen(false)}
+                                    >
+                                        Cancelar
+                                    </Button>
+                                    <Button 
+                                        variant="contained" 
+                                        sx={{backgroundColor: "#FF5E1E", height: "30.75px", paddingX: "20px"}}
+                                        size="small"
+                                        disabled={!isFormValid()}
+                                        onClick={() => updateVenda()}
+                                    >
+                                        Salvar
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </Modal>
                         <Grid 
                             item 
                             xs={12}
@@ -212,6 +471,7 @@ const Planilha = () => {
                                         }
                                     }}
                                     pageSizeOptions={[10, 50, 100]}
+                                    onCellClick={handleCellClick}
                                     localeText={localeText}
                                     slots={{
                                         toolbar: GridToolbar,
@@ -222,6 +482,9 @@ const Planilha = () => {
                                         },
                                      }}
                                 />
+                                <Typography sx={{fontWeight: "normal", fontSize: 14,  color: "gray", marginTop: 1}}>
+                                    Dica: clique em uma célula para alterar os dados
+                                </Typography>
                             </Box>
                         </Grid>
                     </Grid>

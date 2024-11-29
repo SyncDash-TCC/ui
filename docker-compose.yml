@@ -18,16 +18,16 @@ services:
     networks:
       - sisdash_network
 
-  nginx:
-    container_name: nginx
-    image: nginx:latest
-    restart: always
-    volumes:
-      - './log/:/var/log/nginx/'
-    ports:
-      - '80:80'
-    networks:
-      - sisdash_network
+#   nginx:
+#     container_name: nginx
+#     image: nginx:latest
+#     restart: always
+#     volumes:
+#       - './log/:/var/log/nginx/'
+#     ports:
+#       - '80:80'
+#     networks:
+#       - sisdash_network
 
 networks:
   sisdash_network:

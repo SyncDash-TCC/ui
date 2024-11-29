@@ -7,10 +7,11 @@ import Box from "@mui/material/Box";
 import {useDispatch} from "react-redux";
 import api from "../../axios";
 import InputPassword from "../../components/Input/InputPassword";
-import { GRAY_LABEL_UX, RED_ERROR_UX, GRAY_HEADER_UX, styleYellowButton, GRAY_BORDER_TABLE, LINE_TABLE, SECONDARY } from "../../shared/utils";
+import { GRAY_LABEL_UX, RED_ERROR_UX, styleYellowButton, GRAY_BORDER_TABLE, SECONDARY, PRIMARY } from "../../shared/utils";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import { showSnackMessage } from "../../actions/SnackActions";
+import logo from "../../assets/files/logo.png";
 
 
 const CreateAccount = () => {
@@ -51,13 +52,17 @@ const CreateAccount = () => {
     return (
         <Box
             sx={{
-                backgroundColor: SECONDARY,
+                backgroundColor: PRIMARY,
                 height: "100vh",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                paddingTop: "150px",
+                flexDirection: "column",
             }}
         >
+            <Box sx={{display: "flex", alignItems: "center", gap: 2, paddingY: 4}}>
+                <img src={logo} alt="Logo" style={{height: "60px"}} />
+            </Box>
             <Grid container sx={{backgroundColor: "white", width: "500px", borderRadius: 2, border: `1px solid ${GRAY_BORDER_TABLE}`, padding: 2, boxShadow: "0px 10px 15px -3px rgba(0,0,0,0.2)"}}>
                 <Grid item xs={12} sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <p style={styles.header}>Crie uma conta</p>
