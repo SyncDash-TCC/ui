@@ -49,6 +49,9 @@ const Dashboard = () => {
             cx: 150,
             outerRadius: 80,
             cornerRadius: 5,
+            arcLabel: (item) => `${item.value}%`,
+            arcLabelMinAngle: 30,
+            arcLabelRadius: '70%',
         },
     ]);
     const [vendasTotais, setVendasTotais] = useState([
@@ -66,6 +69,9 @@ const Dashboard = () => {
             cx: 150,
             outerRadius: 80,
             cornerRadius: 5,
+            arcLabel: (item) => `${item.value}%`,
+            arcLabelMinAngle: 30,
+            arcLabelRadius: '70%',
         },
     ]);
     const [diaComMaisVendas, setDiaComMaisVendas] = useState([
